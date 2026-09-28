@@ -1,0 +1,15 @@
+"use strict";
+
+const express = require("express");
+
+const router = express.Router();
+
+const networkController =
+    require("../controllers/networkController");
+
+router.get(
+    "/",
+    networkController.getNetwork
+);
+
+module.exports = router;

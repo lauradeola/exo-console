@@ -1,0 +1,11 @@
+"use strict";
+
+const express = require("express");
+const router = express.Router();
+
+const systemController = require("../controllers/systemController");
+
+router.get("/", systemController.getSystem);
+router.get("/health", systemController.getHealth);
+
+module.exports = router;

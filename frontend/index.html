@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="EXO Intelligence Platform"
+    >
+
+    <title>EXO — Intelligence Platform</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="./css/style.css">
+
+</head>
+
+
+<body>
+
+<div class="exo-shell">
+
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-top">
+
+            <div class="exo-brand">
+
+                <div class="brand-mark">
+                    X
+                </div>
+
+                <div class="brand-name">
+                    EXO
+                </div>
+
+            </div>
+
+            <div class="brand-version">
+                SYSTEM / 01
+            </div>
+
+        </div>
+
+
+        <nav class="navigation">
+
+            <div class="nav-section">
+
+                <span class="nav-label">
+                    PLATFORM
+                </span>
+
+                <a
+                    href="#"
+                    class="nav-link active"
+                    data-section="overview"
+                >
+                    <span class="nav-number">
+                        01
+                    </span>
+
+                    <span>
+                        Overview
+                    </span>
+                </a>
+
+
+                <a
+                    href="#"
+                    class="nav-link"
+                    data-section="intelligence"
+                >
+                    <span class="nav-number">
+                        02
+                    </span>
+
+                    <span>
+                        Intelligence
+                    </span>
+                </a>
+
+
+                <a
+                    href="#"
+                    class="nav-link"
+                    data-section="network"
+                >
+                    <span class="nav-number">
+                        03
+                    </span>
+
+                    <span>
+                        Network
+                    </span>
+                </a>
+
+
+                <a
+                    href="#"
+                    class="nav-link"
+                    data-section="activity"
+                >
+                    <span class="nav-number">
+                        04
+                    </span>
+
+                    <span>
+                        Activity
+                    </span>
+                </a>
+
+            </div>
+
+
+            <div class="nav-section">
+
+                <span class="nav-label">
+                    SYSTEM
+                </span>
+
+
+                <a
+                    href="#"
+                    class="nav-link"
+                    data-section="security"
+                >
+                    <span class="nav-number">
+                        05
+                    </span>
+
+                    <span>
+                        Security
+                    </span>
+                </a>
+
+
+                <a
+                    href="#"
+                    class="nav-link"
+                    data-section="settings"
+                >
+                    <span class="nav-number">
+                        06
+                    </span>
+
+                    <span>
+                        Settings
+                    </span>
+                </a>
+
+            </div>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="system-state">
+
+                <div class="state-line">
+
+                    <span class="state-indicator"></span>
+
+                    <span>
+                        SYSTEM OPERATIONAL
+                    </span>
+
+                </div>
+
+                <span class="state-code">
+                    EXO-CORE / ONLINE
+                </span>
+
+            </div>
+
+
+            <div class="user-card">
+
+                <div class="user-avatar">
+                    LX
+                </div>
+
+                <div class="user-details">
+
+                    <strong>
+                        Operator
+                    </strong>
+
+                    <span>
+                        Authorized
+                    </span>
+
+                </div>
+
+                <button
+                    class="user-menu"
+                    type="button"
+                >
+                    •••
+                </button>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="main-content">
+
+
+        <!-- =================================================
+             TOPBAR
+        ================================================== -->
+
+        <header class="topbar">
+
+            <div class="topbar-context">
+
+                <span class="context-system">
+                    EXO
+                </span>
+
+                <span class="context-divider">
+                    /
+                </span>
+
+                <span class="context-page">
+                    OVERVIEW
+                </span>
+
+            </div>
+
+
+            <div class="topbar-right">
+
+                <div class="live-status">
+
+                    <span class="live-indicator"></span>
+
+                    <span>
+                        LIVE
+                    </span>
+
+                </div>
+
+
+                <div
+                    class="system-time"
+                    id="systemTime"
+                >
+                    --:--:--
+                </div>
+
+
+                <button
+                    class="refresh-button"
+                    id="refreshBtn"
+                    type="button"
+                    aria-label="Refresh system"
+                >
+                    ↻
+                </button>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- =================================================
+             CONTENT
+        ================================================== -->
+
+        <div class="content">
+
+
+            <!-- =================================================
+                 HERO
+            ================================================== -->
+
+            <section class="hero">
+
+
+                <div class="hero-copy">
+
+                    <div class="eyebrow">
+                        EXO INTELLIGENCE PLATFORM
+                    </div>
+
+
+                    <h1>
+                        Intelligence
+                        <br>
+                        without limits.
+                    </h1>
+
+
+                    <p>
+                        Unified visibility across your digital
+                        environment. Monitor, analyze and respond
+                        from a single intelligence layer.
+                    </p>
+
+
+                    <div class="hero-actions">
+
+                        <button
+                            class="primary-button"
+                            id="initializeBtn"
+                            data-scan
+                            type="button"
+                        >
+
+                            <span>
+                                Initialize scan
+                            </span>
+
+                            <span class="button-arrow">
+                                →
+                            </span>
+
+                        </button>
+
+
+                        <button
+                            class="secondary-button"
+                            id="detailsBtn"
+                            type="button"
+                        >
+                            System details
+                        </button>
+
+                    </div>
+
+
+                    <div class="hero-meta">
+
+
+                        <div class="meta-item">
+
+                            <span class="meta-label">
+                                CORE
+                            </span>
+
+                            <span class="meta-value">
+                                EXO-01
+                            </span>
+
+                        </div>
+
+
+                        <div class="meta-item">
+
+                            <span class="meta-label">
+                                STATUS
+                            </span>
+
+                            <span
+                                class="meta-value online"
+                                data-system-status
+                            >
+                                OPERATIONAL
+                            </span>
+
+                        </div>
+
+
+                        <div class="meta-item">
+
+                            <span class="meta-label">
+                                VERSION
+                            </span>
+
+                            <span class="meta-value">
+                                1.0.0
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     CORE VISUAL
+                ================================================== -->
+
+                <div class="core-container">
+
+                    <div class="core-grid"></div>
+
+                    <div class="core-ring ring-one"></div>
+
+                    <div class="core-ring ring-two"></div>
+
+                    <div class="core-ring ring-three"></div>
+
+                    <div class="core-cross horizontal"></div>
+
+                    <div class="core-cross vertical"></div>
+
+                    <div class="core-scan"></div>
+
+
+                    <div class="core-center">
+
+                        <span class="core-x">
+                            X
+                        </span>
+
+                        <span class="core-status">
+                            CORE
+                        </span>
+
+                    </div>
+
+
+                    <div class="core-label label-top">
+                        SIGNAL
+                    </div>
+
+                    <div class="core-label label-right">
+                        98.4%
+                    </div>
+
+                    <div class="core-label label-bottom">
+                        ACTIVE
+                    </div>
+
+                    <div class="core-label label-left">
+                        EXO-01
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 METRICS
+            ================================================== -->
+
+            <section class="metrics-grid">
+
+
+                <article class="metric-card">
+
+                    <div class="metric-header">
+
+                        <span>
+                            ACTIVE NODES
+                        </span>
+
+                        <span class="metric-index">
+                            01
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        class="metric-value"
+                        id="nodesValue"
+                        data-metric="nodes"
+                    >
+                        --
+                    </div>
+
+
+                    <div class="metric-footer">
+
+                        <span class="metric-status">
+                            NETWORK STABLE
+                        </span>
+
+                        <span
+                            class="metric-change"
+                            data-metric-change="nodes"
+                        >
+                            LIVE
+                        </span>
+
+                    </div>
+
+                </article>
+
+
+
+                <article class="metric-card">
+
+                    <div class="metric-header">
+
+                        <span>
+                            SYSTEM LOAD
+                        </span>
+
+                        <span class="metric-index">
+                            02
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        class="metric-value"
+                        id="loadValue"
+                        data-metric="activity"
+                    >
+                        --
+                    </div>
+
+
+                    <div class="metric-footer">
+
+                        <span class="metric-status">
+                            NOMINAL
+                        </span>
+
+                        <span class="metric-change">
+                            LIVE
+                        </span>
+
+                    </div>
+
+                </article>
+
+
+
+                <article class="metric-card">
+
+                    <div class="metric-header">
+
+                        <span>
+                            EVENTS
+                        </span>
+
+                        <span class="metric-index">
+                            03
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        class="metric-value"
+                        id="eventsValue"
+                        data-metric="events"
+                    >
+                        --
+                    </div>
+
+
+                    <div class="metric-footer">
+
+                        <span class="metric-status">
+                            MONITORING
+                        </span>
+
+                        <span class="metric-change">
+                            LIVE
+                        </span>
+
+                    </div>
+
+                </article>
+
+
+
+                <article class="metric-card">
+
+                    <div class="metric-header">
+
+                        <span>
+                            SECURITY
+                        </span>
+
+                        <span class="metric-index">
+                            04
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        class="metric-value security-grade"
+                        id="securityValue"
+                    >
+                        A+
+                    </div>
+
+
+                    <div class="metric-footer">
+
+                        <span class="metric-status">
+                            PROTECTED
+                        </span>
+
+                        <span class="metric-change">
+                            100%
+                        </span>
+
+                    </div>
+
+                </article>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 LIVE INTELLIGENCE
+            ================================================== -->
+
+            <section class="workspace">
+
+
+                <div class="workspace-heading">
+
+                    <div>
+
+                        <span class="eyebrow">
+                            LIVE INTELLIGENCE
+                        </span>
+
+                        <h2>
+                            System activity
+                        </h2>
+
+                    </div>
+
+
+                    <div class="workspace-status">
+                        ALL SYSTEMS NOMINAL
+                    </div>
+
+                </div>
+
+
+
+                <div class="workspace-grid">
+
+
+                    <!-- ACTIVITY -->
+
+                    <article class="panel activity-panel">
+
+                        <div class="panel-header">
+
+                            <div>
+
+                                <span class="panel-label">
+                                    ACTIVITY STREAM
+                                </span>
+
+                                <h3>
+                                    Recent events
+                                </h3>
+
+                            </div>
+
+                            <span class="panel-live">
+                                LIVE
+                            </span>
+
+                        </div>
+
+
+                        <div
+                            class="activity-list"
+                            id="activityList"
+                            data-events
+                        >
+                            <!-- Eventos reais entram aqui pelo app.js -->
+                        </div>
+
+                    </article>
+
+
+
+                    <!-- SYSTEMS -->
+
+                    <article class="panel systems-panel">
+
+                        <div class="panel-header">
+
+                            <div>
+
+                                <span class="panel-label">
+                                    INFRASTRUCTURE
+                                </span>
+
+                                <h3>
+                                    Core systems
+                                </h3>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="systems-list">
+
+
+                            <div class="system-item">
+
+                                <div class="system-info">
+
+                                    <div class="system-icon">
+                                        EX
+                                    </div>
+
+                                    <div>
+
+                                        <strong>
+                                            EXO Core
+                                        </strong>
+
+                                        <span>
+                                            Intelligence engine
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="system-health">
+
+                                    <span class="health-indicator"></span>
+
+                                    <span>
+                                        ONLINE
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <div class="system-item">
+
+                                <div class="system-info">
+
+                                    <div class="system-icon">
+                                        NW
+                                    </div>
+
+                                    <div>
+
+                                        <strong>
+                                            Network
+                                        </strong>
+
+                                        <span>
+                                            Node infrastructure
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="system-health">
+
+                                    <span class="health-indicator"></span>
+
+                                    <span>
+                                        ONLINE
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <div class="system-item">
+
+                                <div class="system-info">
+
+                                    <div class="system-icon">
+                                        AI
+                                    </div>
+
+                                    <div>
+
+                                        <strong>
+                                            Intelligence
+                                        </strong>
+
+                                        <span>
+                                            Analysis engine
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="system-health">
+
+                                    <span class="health-indicator"></span>
+
+                                    <span>
+                                        READY
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <div class="system-item">
+
+                                <div class="system-info">
+
+                                    <div class="system-icon">
+                                        SE
+                                    </div>
+
+                                    <div>
+
+                                        <strong>
+                                            Security
+                                        </strong>
+
+                                        <span>
+                                            Protection layer
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="system-health">
+
+                                    <span class="health-indicator"></span>
+
+                                    <span>
+                                        ACTIVE
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 ACTIVE NODES
+            ================================================== -->
+
+            <section class="nodes-section">
+
+
+                <div class="workspace-heading">
+
+                    <div>
+
+                        <span class="eyebrow">
+                            NETWORK INTELLIGENCE
+                        </span>
+
+                        <h2>
+                            Active nodes
+                        </h2>
+
+                    </div>
+
+
+                    <div class="workspace-status">
+                        LIVE TELEMETRY
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="nodes-grid"
+                    data-nodes
+                >
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 TELEMETRY
+            ================================================== -->
+
+            <section class="telemetry-section">
+
+
+                <div class="workspace-heading">
+
+                    <div>
+
+                        <span class="eyebrow">
+                            TELEMETRY ENGINE
+                        </span>
+
+                        <h2>
+                            System telemetry
+                        </h2>
+
+                        <p>
+                            Real-time activity and signal monitoring.
+                        </p>
+
+                    </div>
+
+
+                    <div class="workspace-status">
+                        LIVE DATA
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="telemetry-chart"
+                    data-telemetry-chart
+                >
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 NETWORK INTELLIGENCE
+            ================================================== -->
+
+            <section class="network-section">
+
+
+                <div class="workspace-heading">
+
+
+                    <div>
+
+                        <span class="eyebrow">
+                            NETWORK INTELLIGENCE
+                        </span>
+
+                        <h2>
+                            Network topology
+                        </h2>
+
+                        <p>
+                            Live node communication and system topology.
+                        </p>
+
+                    </div>
+
+
+                    <div class="network-live">
+
+                        <span></span>
+
+                        LIVE NETWORK
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="network-layout">
+
+
+                    <!-- NETWORK MAP -->
+
+                    <div class="network-map">
+
+
+                        <div class="network-grid"></div>
+
+
+                        <!-- CONNECTIONS -->
+
+                        <div class="network-line line-1"></div>
+
+                        <div class="network-line line-2"></div>
+
+                        <div class="network-line line-3"></div>
+
+                        <div class="network-line line-4"></div>
+
+
+
+                        <!-- NODE 01 -->
+
+                        <button
+                            class="network-node node-1"
+                            data-network-node="NODE-01"
+                            type="button"
+                        >
+
+                            <span class="node-pulse"></span>
+
+                            <span class="node-core"></span>
+
+                            <strong>
+                                01
+                            </strong>
+
+                            <small>
+                                ORBIT
+                            </small>
+
+                        </button>
+
+
+
+                        <!-- NODE 02 -->
+
+                        <button
+                            class="network-node node-2"
+                            data-network-node="NODE-02"
+                            type="button"
+                        >
+
+                            <span class="node-pulse"></span>
+
+                            <span class="node-core"></span>
+
+                            <strong>
+                                02
+                            </strong>
+
+                            <small>
+                                VECTOR
+                            </small>
+
+                        </button>
+
+
+
+                        <!-- NODE 03 -->
+
+                        <button
+                            class="network-node node-3"
+                            data-network-node="NODE-03"
+                            type="button"
+                        >
+
+                            <span class="node-pulse"></span>
+
+                            <span class="node-core"></span>
+
+                            <strong>
+                                03
+                            </strong>
+
+                            <small>
+                                NOVA
+                            </small>
+
+                        </button>
+
+
+
+                        <!-- NODE 04 -->
+
+                        <button
+                            class="network-node node-4"
+                            data-network-node="NODE-04"
+                            type="button"
+                        >
+
+                            <span class="node-pulse"></span>
+
+                            <span class="node-core"></span>
+
+                            <strong>
+                                04
+                            </strong>
+
+                            <small>
+                                AXIS
+                            </small>
+
+                        </button>
+
+
+
+                        <!-- NODE 05 -->
+
+                        <button
+                            class="network-node node-5"
+                            data-network-node="NODE-05"
+                            type="button"
+                        >
+
+                            <span class="node-pulse"></span>
+
+                            <span class="node-core"></span>
+
+                            <strong>
+                                05
+                            </strong>
+
+                            <small>
+                                PULSE
+                            </small>
+
+                        </button>
+
+
+
+                        <!-- EXO CORE -->
+
+                        <div class="network-center">
+
+                            <div class="center-ring"></div>
+
+                            <div class="center-core">
+                                EXO
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- NODE INSPECTOR -->
+
+                    <aside class="network-inspector">
+
+
+                        <span class="eyebrow">
+                            NODE INSPECTOR
+                        </span>
+
+
+                        <div
+                            class="inspector-empty"
+                            data-network-inspector
+                        >
+
+                            <div class="inspector-icon">
+                                +
+                            </div>
+
+
+                            <strong>
+                                Select a node
+                            </strong>
+
+
+                            <p>
+                                Select a network node to inspect
+                                its current telemetry.
+                            </p>
+
+                        </div>
+
+                    </aside>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 SCAN STATUS
+            ================================================== -->
+
+            <section class="scan-status-panel">
+
+
+                <div>
+
+                    <span class="panel-label">
+                        SCAN ENGINE
+                    </span>
+
+                    <h3>
+                        Network intelligence
+                    </h3>
+
+                </div>
+
+
+                <div class="scan-status-data">
+
+
+                    <div>
+
+                        <span>
+                            TOTAL SCANS
+                        </span>
+
+                        <strong data-scan-count>
+                            0
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            LAST SCAN
+                        </span>
+
+                        <strong data-last-scan>
+                            NEVER
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            UPTIME
+                        </span>
+
+                        <strong data-uptime>
+                            --
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 FOOTER
+            ================================================== -->
+
+            <footer class="footer">
+
+
+                <div>
+                    EXO INTELLIGENCE PLATFORM
+                </div>
+
+
+                <div>
+                    SECURE ENVIRONMENT
+                </div>
+
+
+                <div>
+
+                    <span class="footer-status"></span>
+
+                    SYSTEM OPERATIONAL
+
+                </div>
+
+            </footer>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+
+<!-- =========================================================
+     APP
+========================================================= -->
+
+<script src="./js/app.js"></script>
+
+
+</body>
+
+</html>
