@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="EXO — console de infraestrutura que reúne AWS, Datadog e Stripe em um só painel.">
+<title>EXO — Console de infraestrutura</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,340;9..144,480;9..144,560&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#F2F4F6;
+  --surface:#FFFFFF;
+  --surface-muted:#E9EDF1;
+  --border:#DCE2E8;
+  --ink:#161E27;
+  --ink-soft:#5C6873;
+  --ink-faint:#64707A;
+  --accent:#3D4FE0;
+  --accent-ink:#2A35A8;
+  --accent-soft:#E7E8FC;
+  --warn:#B9762A;
+  --warn-soft:#F6E9D8;
+  --danger:#B24638;
+  --danger-soft:#F5E0DC;
+  --good:#3D8560;
+  --good-soft:#E1EFE6;
+  --font-display:'Fraunces', Georgia, serif;
+  --font-body:'IBM Plex Sans', -apple-system, sans-serif;
+  --font-mono:'IBM Plex Mono', ui-monospace, monospace;
+  --radius-s: 4px;
+  --radius-m: 8px;
+  --shadow: 0 1px 2px rgba(20,26,32,0.05);
+}
+:root:not([data-theme="light"]){
+  @media (prefers-color-scheme: dark){
+    --bg:#12161B; --surface:#171C22; --surface-muted:#1E242B; --border:#2B333B;
+    --ink:#E9EDF0; --ink-soft:#9BA6B0; --ink-faint:#7A838C;
+    --accent:#8B95FF; --accent-ink:#C3C9FF; --accent-soft:#242A52;
+    --warn:#DDA25C; --warn-soft:#2D2416;
+    --danger:#DE8578; --danger-soft:#2E1D1A;
+    --good:#6EC190; --good-soft:#182A1F;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12161B; --surface:#171C22; --surface-muted:#1E242B; --border:#2B333B;
+  --ink:#E9EDF0; --ink-soft:#9BA6B0; --ink-faint:#7A838C;
+  --accent:#8B95FF; --accent-ink:#C3C9FF; --accent-soft:#242A52;
+  --warn:#DDA25C; --warn-soft:#2D2416;
+  --danger:#DE8578; --danger-soft:#2E1D1A;
+  --good:#6EC190; --good-soft:#182A1F;
+  --shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto;}
+  *{transition-duration:0.01ms !important; animation-duration:0.01ms !important;}
+}
+body{
+  margin:0; color:var(--ink);
+  font-family:var(--font-body); font-size:15px; line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  background:var(--bg);
+}
+h1,h2,h3{font-family:var(--font-display); font-weight:520; margin:0; letter-spacing:-0.018em;}
+p{margin:0;}
+button{font-family:inherit; cursor:pointer;}
+a{color:inherit;}
+::selection{background:var(--accent-soft); color:var(--accent-ink);}
+::-webkit-scrollbar{width:8px; height:8px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border); border-radius:99px;}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+.skip-link{
+  position:absolute; left:-9999px; top:0; z-index:100;
+  background:var(--ink); color:var(--bg); padding:10px 16px; border-radius:0 0 8px 0;
+  font-size:13px; font-weight:500; text-decoration:none;
+}
+.skip-link:focus{left:0;}
+
+.shell{display:grid; grid-template-columns:236px 1fr; min-height:100vh;}
+
+/* ---------- SIDEBAR ---------- */
+.sidebar{
+  background:var(--bg);
+  border-right:1px solid var(--border);
+  display:flex; flex-direction:column; padding:26px 18px;
+  position:sticky; top:0; height:100vh;
+}
+.brand{display:flex; align-items:center; gap:10px; padding:4px 8px 22px;}
+.brand-mark{
+  width:30px; height:30px; border-radius:9px; background:var(--ink); color:var(--bg);
+  display:flex; align-items:center; justify-content:center; position:relative; flex-shrink:0;
+}
+.brand-mark svg{width:17px; height:17px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;}
+.brand-mark::after{
+  content:''; position:absolute; top:-2px; right:-2px; width:7px; height:7px;
+  border-radius:50%; background:var(--accent); border:2px solid var(--bg);
+}
+.brand-name{font-family:var(--font-display); font-size:19px; font-weight:560; letter-spacing:-0.02em;}
+.brand-name .accent-letter{color:var(--accent);}
+
+.nav{display:flex; flex-direction:column; gap:1px; flex:1;}
+.nav-link{
+  display:flex; align-items:center; gap:11px; padding:9px 10px 9px 12px; border-radius:var(--radius-s);
+  text-decoration:none; color:var(--ink-soft); font-size:13.5px; font-weight:500;
+  border-left:2px solid transparent; margin-left:-2px;
+  transition:background 0.15s, color 0.15s, border-color 0.15s;
+}
+.nav-link:hover{background:var(--surface-muted); color:var(--ink);}
+.nav-link.active{background:var(--accent-soft); color:var(--accent-ink); border-left-color:var(--accent);}
+.nav-icon{width:16px; height:16px; flex-shrink:0;}
+.nav-icon svg{width:100%; height:100%; stroke:currentColor; fill:none; stroke-width:1.6;}
+
+.sidebar-foot{padding-top:14px; border-top:1px solid var(--border); margin-top:10px;}
+.status-line{display:flex; align-items:center; gap:7px; font-size:12.5px; color:var(--ink-soft);}
+.dot{display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--ink-faint); flex-shrink:0;}
+.dot-good{background:var(--good);}
+.dot-warn{background:var(--warn);}
+.dot-danger{background:var(--danger);}
+.dot-lg{width:8px; height:8px;}
+
+/* ---------- TOPBAR ---------- */
+.main{min-width:0;}
+.topbar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px 32px; border-bottom:1px solid var(--border);
+  position:sticky; top:0; background:var(--bg); z-index:5;
+}
+.crumb{font-size:13px; color:var(--ink-soft);}
+.crumb strong{color:var(--ink); font-weight:600;}
+.topbar-right{display:flex; align-items:center; gap:16px;}
+.clock{font-family:var(--font-mono); font-size:13px; color:var(--ink-soft);}
+.btn{
+  border:1px solid var(--border); background:var(--surface); color:var(--ink);
+  padding:8px 15px; border-radius:8px; font-size:13.5px; font-weight:500;
+  transition:border-color 0.15s, background 0.15s, opacity 0.15s;
+}
+.btn:hover{border-color:var(--ink-faint);}
+.btn:active{opacity:0.7;}
+.btn.primary{background:var(--ink); color:var(--bg); border-color:var(--ink);}
+.btn.primary:hover{background:var(--accent-ink); border-color:var(--accent-ink);}
+.btn.small{padding:6px 12px; font-size:12.5px;}
+.btn[disabled]{opacity:0.55; cursor:default;}
+.icon-btn{width:34px; height:34px; padding:0; display:flex; align-items:center; justify-content:center; font-size:15px;}
+
+.toast-stack{position:fixed; bottom:22px; right:22px; display:flex; flex-direction:column; gap:8px; z-index:80; max-width:280px;}
+.toast{
+  background:var(--ink); color:var(--bg); padding:11px 16px; border-radius:10px; font-size:13px;
+  box-shadow:0 10px 24px rgba(0,0,0,0.18); opacity:0; transform:translateY(8px);
+  transition:opacity 0.2s, transform 0.2s;
+}
+.toast.show{opacity:1; transform:translateY(0);}
+.toast.success{background:var(--good);}
+.toast.error{background:var(--danger);}
+
+.list-tools{display:flex; gap:10px; margin-bottom:12px;}
+.search-wrap{position:relative; flex:1;}
+.search-wrap input{width:100%;}
+.search-clear{
+  position:absolute; right:6px; top:50%; transform:translateY(-50%);
+  background:none; border:none; color:var(--ink-faint); font-size:16px; line-height:1;
+  cursor:pointer; padding:4px 6px; display:none; border-radius:4px;
+}
+.search-clear.show{display:block;}
+.search-clear:hover{color:var(--ink);}
+.list-tools input{
+  flex:1; border:1px solid var(--border); background:var(--surface); color:var(--ink);
+  padding:9px 34px 9px 13px; border-radius:8px; font-size:13px;
+}
+
+.spark{width:100%; height:26px; margin-top:12px; display:block;}
+.spark polyline{fill:none; stroke:var(--accent-ink); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; opacity:0.55;}
+
+.list-more{padding:12px 20px; text-align:center;}
+
+/* ---------- INCIDENT TIMELINE (distinct from the deploys table) ---------- */
+.timeline-card{background:var(--surface); border-radius:14px; padding:6px 26px 6px; box-shadow:0 1px 3px rgba(20,26,32,0.04), 0 1px 1px rgba(20,26,32,0.03);}
+.timeline-item{position:relative; padding:18px 0 18px 22px; border-left:2px solid var(--border); margin-left:2px;}
+.timeline-item:last-child{border-color:transparent;}
+.timeline-dot{position:absolute; left:-7px; top:22px; width:12px; height:12px; border-radius:50%; border:2px solid var(--surface); background:var(--ink-faint);}
+.timeline-dot.dot-danger{background:var(--danger);}
+.timeline-dot.dot-warn{background:var(--warn);}
+.timeline-dot.dot-good{background:var(--good);}
+.timeline-head{display:flex; justify-content:space-between; align-items:baseline; gap:16px;}
+.timeline-desc{font-size:14px; font-weight:500;}
+.timeline-meta{font-family:var(--font-mono); font-size:12px; color:var(--ink-faint); margin-top:5px;}
+.timeline-empty{padding:20px 0; color:var(--ink-faint); font-size:13px;}
+
+/* ---------- CONTENT ---------- */
+.content{padding:48px 40px 100px; max-width:1180px;}
+section{scroll-margin-top:70px; margin-bottom:80px;}
+.section-head{margin-bottom:26px; max-width:640px;}
+.section-head h2{font-size:21px; font-weight:520;}
+.section-head p{color:var(--ink-soft); font-size:14px; margin-top:7px;}
+
+/* ---------- HERO ---------- */
+.hero{
+  display:grid; grid-template-columns:1.5fr 0.5fr; gap:48px;
+  align-items:flex-start; padding-bottom:10px;
+}
+.hero h1{font-size:42px; line-height:1.12; max-width:490px; font-weight:480;}
+.hero-status{
+  display:inline-flex; align-items:center; gap:8px; font-size:13px; color:var(--ink-soft);
+  margin-bottom:20px; padding:5px 10px 5px 8px; border:1px solid var(--border); border-radius:99px;
+}
+.hero p.lede{color:var(--ink-soft); font-size:15px; margin:18px 0 24px; max-width:440px;}
+.hero-actions{display:flex; gap:14px; align-items:center;}
+.hero-link{font-size:13.5px; color:var(--ink-soft); text-decoration:underline; text-underline-offset:3px;}
+
+.hero-visual{
+  display:flex; flex-direction:column; align-items:flex-end; text-align:right;
+  padding-top:64px; min-width:150px;
+}
+.hero-figure{
+  font-family:var(--font-display); font-weight:480; font-size:64px; line-height:0.95;
+  letter-spacing:-0.02em; color:var(--ink); font-variant-numeric:tabular-nums;
+}
+.hero-figure-label{font-size:11.5px; color:var(--ink-faint); margin-top:8px;}
+.hero-spark{width:150px; height:28px; margin-top:16px;}
+.hero-spark polyline{fill:none; stroke:var(--accent); stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round;}
+
+/* ---------- METRICS ---------- */
+.metrics{display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr; gap:16px;}
+.metric{
+  background:var(--surface); border-radius:14px;
+  padding:20px 20px; box-shadow:0 1px 3px rgba(20,26,32,0.04), 0 1px 1px rgba(20,26,32,0.03);
+}
+.metric.featured{
+  display:flex; flex-direction:column; justify-content:space-between;
+  border-bottom:2px solid var(--accent);
+}
+.metric.featured .metric-value{font-family:var(--font-display); font-weight:500; font-size:36px; color:var(--accent-ink);}
+.metric-label{font-size:12.5px; color:var(--ink-soft); margin-bottom:12px;}
+.metric-value{font-family:var(--font-mono); font-size:23px; font-weight:500;}
+.metric-sub{font-size:12px; color:var(--ink-faint); margin-top:7px;}
+.badge{display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:500; padding:3px 9px; border-radius:99px; border:1px solid transparent; line-height:1.5; vertical-align:middle;}
+.badge-dot::before{content:''; width:5px; height:5px; border-radius:50%; background:currentColor; flex-shrink:0;}
+.badge-good{background:var(--good-soft); color:var(--good);}
+.badge-warn{background:var(--warn-soft); color:var(--warn);}
+.badge-danger{background:var(--danger-soft); color:var(--danger);}
+.badge-info{background:var(--accent-soft); color:var(--accent-ink);}
+.badge-neutral{background:transparent; color:var(--ink-faint); border-color:var(--border);}
+
+/* ---------- SERVICES ---------- */
+.services-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:16px;}
+.service-card{
+  background:var(--surface); border-radius:14px;
+  padding:20px; display:flex; flex-direction:column; gap:13px;
+  box-shadow:0 1px 3px rgba(20,26,32,0.04), 0 1px 1px rgba(20,26,32,0.03);
+  transition:box-shadow 0.15s, transform 0.15s;
+}
+.service-card:hover{box-shadow:0 8px 20px rgba(20,26,32,0.08); transform:translateY(-1px);}
+.service-top{display:flex; align-items:flex-start; justify-content:space-between;}
+.service-name{font-weight:600; font-size:15px; display:flex; align-items:center; gap:8px;}
+.service-mark{width:26px; height:26px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:11px; font-weight:600; color:var(--surface); flex-shrink:0;}
+.service-desc{font-size:13px; color:var(--ink-soft);}
+.service-metric{font-family:var(--font-mono); font-size:13px; color:var(--ink);}
+.service-form{display:none; flex-direction:column; gap:8px; padding-top:6px; border-top:1px solid var(--border);}
+.service-form.open{display:flex;}
+.service-form input{
+  border:1px solid var(--border); background:var(--bg); color:var(--ink);
+  padding:8px 10px; border-radius:var(--radius-s); font-size:12.5px; font-family:var(--font-mono);
+}
+.service-form-row{display:flex; gap:8px;}
+.service-error{font-size:12px; color:var(--danger); display:none;}
+.service-hint{font-size:11.5px; color:var(--ink-faint);}
+
+/* ---------- TABLES / LISTS ---------- */
+.list{border-radius:14px; overflow:hidden; background:var(--surface); box-shadow:0 1px 3px rgba(20,26,32,0.04), 0 1px 1px rgba(20,26,32,0.03);}
+.list-row{
+  display:grid; grid-template-columns:20px 1.4fr 1fr 1fr 100px; gap:14px; align-items:center;
+  padding:14px 20px; border-bottom:1px solid var(--border); font-size:13.5px;
+  transition:background 0.12s;
+}
+.list-row:last-child{border-bottom:none;}
+.list-row:not(.head):hover{background:var(--surface-muted);}
+.list-row.head{background:transparent; font-size:11.5px; color:var(--ink-faint); font-weight:500; padding:12px 20px; border-bottom:1px solid var(--border);}
+.mono-cell{font-family:var(--font-mono); font-size:12.5px; color:var(--ink-soft);}
+
+/* ---------- REGIONS ---------- */
+.regions-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:16px;}
+.region-card{background:var(--surface); border-radius:14px; padding:18px; box-shadow:0 1px 3px rgba(20,26,32,0.04), 0 1px 1px rgba(20,26,32,0.03);}
+.region-top{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
+.region-name{font-family:var(--font-mono); font-size:13px; font-weight:500;}
+.region-stats{display:flex; justify-content:space-between; font-size:12px; color:var(--ink-soft);}
+.region-stats strong{color:var(--ink); font-family:var(--font-mono); font-weight:500;}
+
+/* ---------- SETTINGS ---------- */
+.settings-block{background:var(--surface); border-radius:14px; box-shadow:0 1px 3px rgba(20,26,32,0.04), 0 1px 1px rgba(20,26,32,0.03); padding:22px; max-width:560px; display:flex; flex-direction:column; gap:18px;}
+.settings-row{display:flex; align-items:center; justify-content:space-between; gap:16px;}
+.settings-row-label{font-size:13.5px; font-weight:500;}
+.settings-row-sub{font-size:12px; color:var(--ink-faint); margin-top:2px;}
+select{border:1px solid var(--border); background:var(--bg); color:var(--ink); padding:6px 10px; border-radius:var(--radius-s); font-size:13px;}
+code{font-family:var(--font-mono); font-size:12px; background:var(--surface-muted); padding:1px 5px; border-radius:3px;}
+.contract{background:var(--surface-muted); border-radius:var(--radius-s); padding:14px; font-family:var(--font-mono); font-size:11.5px; color:var(--ink-soft); white-space:pre; overflow-x:auto; line-height:1.6;}
+
+footer{padding:24px 32px; border-top:1px solid var(--border); display:flex; justify-content:space-between; font-size:12px; color:var(--ink-faint);}
+
+@media (max-width: 980px){
+  .shell{grid-template-columns:1fr;}
+  .sidebar{position:static; height:auto; flex-direction:row; align-items:center; overflow-x:auto; padding:14px 16px;}
+  .brand{padding:0 14px 0 0;}
+  .nav{flex-direction:row;}
+  .sidebar-foot{display:none;}
+  .hero{grid-template-columns:1fr;}
+  .hero-visual{order:-1; align-items:flex-start; text-align:left; padding-top:0;}
+  .metrics{grid-template-columns:repeat(2,1fr);}
+  .services-grid{grid-template-columns:1fr;}
+  .regions-grid{grid-template-columns:repeat(2,1fr);}
+  .list-row{grid-template-columns:16px 1fr 1fr; }
+  .list-row span:nth-child(4), .list-row span:nth-child(5){display:none;}
+}
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#overview">Pular para o conteúdo</a>
+
+<div class="shell">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24"><path d="M2 13h3l2-8 4 16 3-11 2 3h6"/></svg>
+      </div>
+      <div class="brand-name">EX<span class="accent-letter">O</span></div>
+    </div>
+
+    <nav class="nav" aria-label="Seções do console">
+      <a class="nav-link" href="#overview" data-nav="overview">
+        <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M2 13h3l2-7 4 14 3-9h3.5"/></svg></span>
+        Visão geral
+      </a>
+      <a class="nav-link" href="#services" data-nav="services">
+        <span class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="7" cy="12" r="3.3"/><circle cx="17" cy="12" r="3.3"/><path d="M10.3 12h3.4"/></svg></span>
+        Integrações
+      </a>
+      <a class="nav-link" href="#incidents" data-nav="incidents">
+        <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M2 13h6l2-8 3 11 2-6h7"/><circle cx="10" cy="5" r="1.3" fill="currentColor" stroke="none"/></svg></span>
+        Incidentes
+      </a>
+      <a class="nav-link" href="#deploys" data-nav="deploys">
+        <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 20V6M6 12l6-6 6 6"/></svg></span>
+        Deploys
+      </a>
+      <a class="nav-link" href="#regions" data-nav="regions">
+        <span class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18"/></svg></span>
+        Regiões
+      </a>
+      <a class="nav-link" href="#settings" data-nav="settings">
+        <span class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1Z"/></svg></span>
+        Ajustes
+      </a>
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="status-line">
+        <span class="dot" id="overallDot"></span>
+        <span id="overallText">Nenhum serviço conectado</span>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <header class="topbar">
+      <div class="crumb">EXO / <strong id="crumbSection">Visão geral</strong></div>
+      <div class="topbar-right">
+        <span class="clock" id="clock">--:--:--</span>
+        <button class="btn small icon-btn" id="themeToggle" type="button" aria-label="Alternar tema">🌙</button>
+        <button class="btn primary small" onclick="document.getElementById('services').scrollIntoView()">Conectar serviço</button>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- OVERVIEW -->
+      <section id="overview">
+        <div class="hero">
+          <div>
+            <div class="hero-status">
+              <span class="dot" id="heroDot"></span>
+              <span id="heroStatusText">Nenhum serviço conectado ainda</span>
+            </div>
+            <h1>Sua infraestrutura, sem enrolação.</h1>
+            <p class="lede">EXO reúne AWS, Datadog e Stripe num painel só, pra você ver uptime, deploys e incidentes sem trocar de aba. Conecte um serviço e os números abaixo passam a ser os seus de verdade.</p>
+            <div class="hero-actions">
+              <button class="btn primary" onclick="document.getElementById('services').scrollIntoView()">Conectar um serviço</button>
+              <a class="hero-link" href="#incidents">Ver histórico de incidentes</a>
+            </div>
+          </div>
+
+          <div class="hero-visual">
+            <span class="hero-figure" id="heroUptimeFigure">—</span>
+            <span class="hero-figure-label" id="heroUptimeLabel">uptime combinado, agora</span>
+            <svg class="hero-spark" viewBox="0 0 100 28" preserveAspectRatio="none">
+              <polyline id="heroSparkLine" points=""></polyline>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <section id="overview-metrics">
+        <div class="metrics">
+          <div class="metric featured">
+            <div class="metric-label">Uptime combinado<span class="badge badge-info" id="tagUptime">demo</span></div>
+            <div class="metric-value" id="mUptime">—</div>
+            <div class="metric-sub" id="mUptimeSub">Conecte um serviço</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">CPU médio<span class="badge badge-info" id="tagCpu">demo</span></div>
+            <div class="metric-value" id="mCpu">—</div>
+            <div class="metric-sub">Entre todas as instâncias</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Requisições/min<span class="badge badge-info" id="tagRpm">demo</span></div>
+            <div class="metric-value" id="mRpm">—</div>
+            <div class="metric-sub">Agregado dos serviços conectados</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Incidentes abertos<span class="badge badge-info" id="tagInc">demo</span></div>
+            <div class="metric-value" id="mInc">—</div>
+            <div class="metric-sub" id="mIncSub">Nos últimos 7 dias</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SERVICES -->
+      <section id="services">
+        <div class="section-head">
+          <h2>Integrações</h2>
+          <p>Cada card espera um endpoint do seu backend — não a chave secreta direto no navegador. O EXO chama esse endpoint e mostra o retorno.</p>
+        </div>
+        <div class="services-grid" id="servicesGrid"></div>
+      </section>
+
+      <!-- INCIDENTS -->
+      <section id="incidents">
+        <div class="section-head">
+          <h2>Incidentes <span class="badge badge-info" id="incidentsDemoTag" style="display:none;">demo</span></h2>
+          <p>O que quebrou, quando quebrou, e quanto tempo ficou fora do ar.</p>
+        </div>
+        <div class="list-tools">
+          <div class="search-wrap">
+            <input type="text" id="incidentSearch" aria-label="Buscar incidentes por descrição ou serviço" placeholder="Buscar por descrição ou serviço…">
+            <button class="search-clear" id="incidentSearchClear" type="button" aria-label="Limpar busca de incidentes">×</button>
+          </div>
+          <button class="btn small" onclick="copyCSV('incidents')">Copiar CSV</button>
+        </div>
+        <div class="timeline-card">
+          <div id="incidentsList" class="timeline"></div>
+        </div>
+      </section>
+
+      <!-- DEPLOYS -->
+      <section id="deploys">
+        <div class="section-head">
+          <h2>Deploys <span class="badge badge-info" id="deploysDemoTag" style="display:none;">demo</span></h2>
+          <p>Quem publicou o quê, onde, e se ficou de pé.</p>
+        </div>
+        <div class="list-tools">
+          <div class="search-wrap">
+            <input type="text" id="deploySearch" aria-label="Buscar deploys por serviço ou ambiente" placeholder="Buscar por serviço ou ambiente…">
+            <button class="search-clear" id="deploySearchClear" type="button" aria-label="Limpar busca de deploys">×</button>
+          </div>
+          <button class="btn small" onclick="copyCSV('deploys')">Copiar CSV</button>
+        </div>
+        <div class="list">
+          <div class="list-row head"><span></span><span>Serviço</span><span>Ambiente</span><span>Quando</span><span>Status</span></div>
+          <div id="deploysList"></div>
+        </div>
+      </section>
+
+      <!-- REGIONS -->
+      <section id="regions">
+        <div class="section-head">
+          <h2>Regiões</h2>
+          <p>Latência e instâncias por região — populado assim que a AWS conectar.</p>
+        </div>
+        <div class="regions-grid" id="regionsGrid"></div>
+      </section>
+
+      <!-- SETTINGS -->
+      <section id="settings">
+        <div class="section-head">
+          <h2>Ajustes</h2>
+          <p>Como o EXO se comporta — fuso, alertas e como ele fala com suas APIs.</p>
+        </div>
+        <div class="settings-block">
+          <div class="settings-row">
+            <div>
+              <div class="settings-row-label">Fuso horário</div>
+              <div class="settings-row-sub">Usado no relógio do topo e nos horários exibidos</div>
+            </div>
+            <select id="timezoneSelect">
+              <option value="America/Sao_Paulo">Brasília (GMT-3)</option>
+              <option value="UTC">UTC</option>
+              <option value="America/New_York">Nova York (ET)</option>
+              <option value="Europe/Lisbon">Lisboa (WET)</option>
+            </select>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div class="settings-row-label">Limiar de alerta de uptime</div>
+              <div class="settings-row-sub">Abaixo disso, o status geral vira atenção</div>
+            </div>
+            <select id="thresholdSelect">
+              <option value="99.99">99,99%</option>
+              <option value="99.9" selected>99,9%</option>
+              <option value="99.5">99,5%</option>
+              <option value="99">99%</option>
+            </select>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div class="settings-row-label">Avisar no Slack quando algo cair</div>
+              <div class="settings-row-sub" id="slackHint">Precisa do Slack conectado em Integrações</div>
+            </div>
+            <input type="checkbox" id="slackNotifyToggle" aria-label="Avisar no Slack quando algo cair" style="width:18px; height:18px;">
+          </div>
+          <div class="settings-row">
+            <div>
+              <div class="settings-row-label">Frequência de atualização</div>
+              <div class="settings-row-sub">Com que intervalo o EXO tenta buscar dados novos</div>
+            </div>
+            <select id="refreshSelect">
+              <option value="15">15s</option>
+              <option value="30" selected>30s</option>
+              <option value="60">60s</option>
+              <option value="120">2min</option>
+            </select>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div class="settings-row-label">Limpar integrações salvas</div>
+              <div class="settings-row-sub">Remove os endpoints salvos neste navegador</div>
+            </div>
+            <button class="btn small" onclick="resetIntegrations()">Limpar</button>
+          </div>
+          <div>
+            <div class="settings-row-label" style="margin-bottom:8px;">Formato esperado do endpoint</div>
+            <div class="settings-row-sub" style="margin-bottom:10px;">Seu backend deve responder <code>GET</code> com este formato — quem chama AWS, Datadog ou Stripe de verdade é o seu servidor, nunca o navegador do usuário. Os campos <code>incidents</code> e <code>deploys</code> são opcionais: quando presentes (ex: no endpoint do PagerDuty ou do Vercel), o EXO usa esses dados reais nas seções de Incidentes e Deploys em vez do exemplo:</div>
+            <div class="contract">{
+  "uptimePct": 99.94,
+  "cpuPct": 41,
+  "requestsPerMin": 8200,
+  "openIncidents": 0,
+  "instances": 12,
+  "region": "us-east-1",
+  "incidents": [
+    { "severity": "warning", "description": "...", "startedAt": "há 2h", "durationMin": 14 }
+  ],
+  "deploys": [
+    { "service": "api", "environment": "production", "when": "há 1h", "status": "ok" }
+  ]
+}</div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <footer>
+      <span>EXO Console</span>
+      <span id="footStatus">Aguardando a primeira integração</span>
+    </footer>
+
+  </main>
+</div>
+
+<div class="toast-stack" id="toastStack" role="status" aria-live="polite" aria-atomic="false"></div>
+
+<script>
+const STORAGE_KEY = 'exo_console_state_v1';
+const CIRC = 2 * Math.PI * 80;
+
+const SERVICE_META = {
+  aws:       { name: 'AWS',           color: '#E8862E', desc: 'Instâncias, CPU e uso por região via CloudWatch.' },
+  datadog:   { name: 'Datadog',       color: '#6A3AC7', desc: 'Monitores, latência e status de checks.' },
+  stripe:    { name: 'Stripe',        color: '#6C63FF', desc: 'Erros de webhook e falhas de API que afetam produção.' },
+  pagerduty: { name: 'PagerDuty',     color: '#06AC38', desc: 'Plantão ativo e escalonamento de incidentes reais.' },
+  vercel:    { name: 'Vercel',        color: '#111111', desc: 'Deploys de frontend em produção e preview.' },
+  slack:     { name: 'Slack',         color: '#4A154B', desc: 'Avisa o canal do time quando algo cai.' },
+  github:    { name: 'GitHub Actions',color: '#24292E', desc: 'Status de build e CI por repositório.' }
+};
+
+function defaultState(){
+  const services = {};
+  Object.keys(SERVICE_META).forEach(key=>{
+    services[key] = { endpoint: '', connected: false, lastSync: null, data: null, error: '' };
+  });
+  return { refreshSeconds: 30, timezone: 'America/Sao_Paulo', alertThreshold: 99.9, notifySlack: false, services };
+}
+
+function loadState(){
+  const base = defaultState();
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return base;
+    const parsed = JSON.parse(raw);
+    base.refreshSeconds = parsed.refreshSeconds || base.refreshSeconds;
+    base.timezone = parsed.timezone || base.timezone;
+    base.alertThreshold = typeof parsed.alertThreshold === 'number' ? parsed.alertThreshold : base.alertThreshold;
+    base.notifySlack = !!parsed.notifySlack;
+    Object.keys(base.services).forEach(key=>{
+      if(parsed.services && parsed.services[key]) base.services[key] = parsed.services[key];
+    });
+    return base;
+  }catch(e){ return base; }
+}
+
+function saveState(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+}
+
+let state = loadState();
+
+function anyConnected(){
+  return Object.values(state.services).some(s => s.connected);
+}
+
+/* ---------- demo data (only used where a service isn't connected) ---------- */
+let demoTick = 0;
+function demoSnapshot(){
+  demoTick++;
+  const wobble = Math.sin(demoTick / 3) * 1.5;
+  return {
+    uptime: 99.91 + Math.sin(demoTick / 7) * 0.06,
+    cpu: Math.round(38 + wobble * 4),
+    rpm: Math.round(6400 + wobble * 300),
+    incidents: 0
+  };
+}
+
+const DEMO_INCIDENTS = [
+  { sev:'dot-danger', desc:'Aumento de latência na API principal', service:'AWS', start:'há 6 dias', duration:'42min' },
+  { sev:'dot-warn', desc:'Webhooks de pagamento atrasados', service:'Stripe', start:'há 4 dias', duration:'11min' },
+  { sev:'dot-good', desc:'Monitor de disco cheio em worker-3', service:'Datadog', start:'há 2 dias', duration:'6min' },
+  { sev:'dot-warn', desc:'Escalonamento não notificou o plantonista', service:'PagerDuty', start:'há 5 dias', duration:'19min' },
+  { sev:'dot-good', desc:'Preview deploy travado em build', service:'Vercel', start:'há 3 dias', duration:'8min' },
+  { sev:'dot-danger', desc:'Canal de alertas parou de receber mensagens', service:'Slack', start:'há 9 dias', duration:'1h12min' },
+  { sev:'dot-good', desc:'Pipeline de CI falhando por timeout', service:'GitHub Actions', start:'há 1 dia', duration:'15min' }
+];
+const DEMO_DEPLOYS = [
+  { service:'api-gateway', env:'production', when:'há 38min', status:'ok' },
+  { service:'billing-worker', env:'production', when:'há 3h', status:'ok' },
+  { service:'checkout-web', env:'staging', when:'há 5h', status:'fail' },
+  { service:'notifications', env:'production', when:'ontem', status:'ok' },
+  { service:'auth-service', env:'production', when:'há 2 dias', status:'ok' },
+  { service:'marketing-site', env:'production', when:'há 2 dias', status:'ok' },
+  { service:'checkout-web', env:'production', when:'há 4 dias', status:'fail' }
+];
+const DEMO_REGIONS = [
+  { name:'us-east-1', latency: 24, instances: 14 },
+  { name:'us-west-2', latency: 41, instances: 6 },
+  { name:'eu-west-1', latency: 58, instances: 9 },
+  { name:'ap-southeast-1', latency: 112, instances: 3 }
+];
+
+let lastMetrics = null;
+
+function renderOverall(){
+  const connected = anyConnected();
+  const dot = document.getElementById('overallDot');
+  const text = document.getElementById('overallText');
+  const heroDot = document.getElementById('heroDot');
+  const heroText = document.getElementById('heroStatusText');
+  const foot = document.getElementById('footStatus');
+
+  const belowThreshold = lastMetrics && lastMetrics.uptime < (state.alertThreshold ?? 99.5);
+  const errored = Object.values(state.services).some(s => s.connected && s.error) || belowThreshold;
+  const cls = !connected ? 'neutral' : (errored ? 'warn' : 'good');
+
+  dot.className = 'dot' + (cls !== 'neutral' ? ' dot-' + cls : '');
+  heroDot.className = 'dot' + (cls !== 'neutral' ? ' dot-' + cls : '');
+
+  if(!connected){
+    text.textContent = 'Nenhum serviço conectado';
+    heroText.textContent = 'Mostrando dados de demonstração';
+    foot.textContent = 'Aguardando a primeira integração';
+  } else if(belowThreshold){
+    const n = Object.values(state.services).filter(s=>s.connected).length;
+    text.textContent = n + ' conectado' + (n>1?'s':'') + ' · uptime abaixo do limiar';
+    heroText.textContent = 'Uptime abaixo do limiar definido em Ajustes';
+    foot.textContent = 'Última sincronização: ' + new Date().toLocaleTimeString('pt-BR');
+  } else {
+    const n = Object.values(state.services).filter(s=>s.connected).length;
+    text.textContent = n + ' serviço' + (n>1?'s':'') + ' conectado' + (n>1?'s':'');
+    heroText.textContent = 'Todos os serviços conectados estão respondendo';
+    foot.textContent = 'Última sincronização: ' + new Date().toLocaleTimeString('pt-BR');
+  }
+}
+
+function computeMetrics(){
+  const connectedServices = Object.values(state.services).filter(s => s.connected && s.data);
+  if(connectedServices.length === 0){
+    const d = demoSnapshot();
+    return { uptime: d.uptime, cpu: d.cpu, rpm: d.rpm, inc: d.incidents, demo:true };
+  }
+  const avg = (arr) => arr.reduce((a,b)=>a+b,0) / arr.length;
+  return {
+    uptime: avg(connectedServices.map(s => s.data.uptimePct ?? 99.9)),
+    cpu: Math.round(avg(connectedServices.map(s => s.data.cpuPct ?? 0))),
+    rpm: Math.round(connectedServices.reduce((a,s)=>a+(s.data.requestsPerMin||0),0)),
+    inc: connectedServices.reduce((a,s)=>a+(s.data.openIncidents||0),0),
+    demo:false
+  };
+}
+
+function renderMetrics(){
+  const m = computeMetrics();
+  lastMetrics = m;
+  document.getElementById('mUptime').textContent = m.uptime.toFixed(2) + '%';
+  document.getElementById('mUptimeSub').textContent = m.demo ? 'Conecte um serviço para ver o valor real' : 'Média dos serviços conectados';
+  document.getElementById('mCpu').textContent = m.cpu + '%';
+  document.getElementById('mRpm').textContent = m.rpm.toLocaleString('pt-BR');
+  document.getElementById('mInc').textContent = m.inc;
+  document.getElementById('mIncSub').textContent = m.demo ? 'Dado de demonstração' : 'Nos serviços conectados';
+
+  ['Uptime','Cpu','Rpm','Inc'].forEach(k=>{
+    document.getElementById('tag'+k).style.display = m.demo ? 'inline-block' : 'none';
+  });
+
+  document.getElementById('heroUptimeFigure').textContent = m.uptime.toFixed(2) + '%';
+  document.getElementById('heroUptimeLabel').textContent = m.demo ? 'uptime combinado (demo)' : 'uptime combinado, agora';
+  pushUptimeHistory(m.uptime);
+}
+
+function renderServices(){
+  const grid = document.getElementById('servicesGrid');
+  grid.innerHTML = '';
+  Object.entries(state.services).forEach(([key, svc]) => {
+    const meta = SERVICE_META[key];
+    const card = document.createElement('div');
+    card.className = 'service-card';
+    card.innerHTML = `
+      <div class="service-top">
+        <div class="service-name">
+          <span class="service-mark" style="background:${meta.color}">${meta.name.slice(0,2).toUpperCase()}</span>
+          ${meta.name}
+        </div>
+        <span class="badge badge-dot ${svc.connected ? 'badge-good' : 'badge-neutral'}">${svc.connected ? 'Conectado' : 'Não conectado'}</span>
+      </div>
+      <div class="service-desc">${meta.desc}</div>
+      ${svc.connected && svc.data ? `<div class="service-metric">${svc.data.instances ?? '—'} instâncias · ${svc.data.region ?? 'região não informada'}</div>` : ''}
+      ${svc.connected && svc.lastSync ? `<div class="service-metric" style="color:var(--ink-faint); font-size:11.5px;">sincronizado às ${new Date(svc.lastSync).toLocaleTimeString('pt-BR',{timeZone:state.timezone})}</div>` : ''}
+      ${svc.error ? `<div class="service-error" style="display:block;">${svc.error}</div>` : ''}
+      <button class="btn small" data-toggle="${key}">${svc.connected ? 'Editar endpoint' : 'Conectar'}</button>
+      <div class="service-form" id="form-${key}">
+        <div class="service-hint">URL do seu endpoint (não a chave da ${meta.name} direto)</div>
+        <div class="service-form-row">
+          <input type="text" id="input-${key}" placeholder="https://sua-api.com/exo/${key}" value="${svc.endpoint || ''}" />
+          <button class="btn small primary" data-test="${key}">Salvar e testar</button>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+  grid.querySelectorAll('[data-toggle]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const key = btn.getAttribute('data-toggle');
+      document.getElementById('form-'+key).classList.toggle('open');
+    });
+  });
+  grid.querySelectorAll('[data-test]').forEach(btn=>{
+    btn.addEventListener('click', ()=> testConnection(btn.getAttribute('data-test'), btn));
+  });
+  if(typeof updateSlackHint === 'function') updateSlackHint();
+}
+
+async function testConnection(key, btnEl){
+  const input = document.getElementById('input-'+key);
+  const endpoint = input.value.trim();
+  const svc = state.services[key];
+  const meta = SERVICE_META[key];
+  svc.endpoint = endpoint;
+  svc.error = '';
+
+  if(!endpoint){
+    svc.error = 'Cole a URL do endpoint antes de testar.';
+    svc.connected = false;
+    saveState(); renderServices(); renderMetrics(); renderOverall();
+    showToast('Falta colar a URL do endpoint.', 'error');
+    return;
+  }
+
+  if(btnEl){ btnEl.disabled = true; btnEl.textContent = 'Testando…'; }
+
+  const controller = new AbortController();
+  const timeout = setTimeout(()=>controller.abort(), 6000);
+  try{
+    const res = await fetch(endpoint, { signal: controller.signal });
+    clearTimeout(timeout);
+    if(!res.ok) throw new Error('status ' + res.status);
+    const data = await res.json();
+    svc.data = data;
+    svc.connected = true;
+    svc.lastSync = Date.now();
+    showToast(meta.name + ' conectado.', 'success');
+  }catch(err){
+    svc.connected = false;
+    svc.data = null;
+    svc.error = 'Não consegui alcançar esse endpoint. Confira a URL e tente de novo.';
+    showToast('Falha ao conectar ' + meta.name + '.', 'error');
+    if(state.notifySlack && state.services.slack.connected && key !== 'slack'){
+      showToast('Isso seria avisado no Slack (defina o endpoint de notificação no seu backend).', 'default');
+    }
+  }
+  saveState();
+  renderServices(); renderMetrics(); renderOverall(); renderRegions(); renderIncidents(); renderDeploys();
+}
+
+const PAGE_SIZE = 4;
+let incidentsShown = PAGE_SIZE;
+let deploysShown = PAGE_SIZE;
+
+function getRealIncidents(){
+  const items = [];
+  Object.entries(state.services).forEach(([key, svc])=>{
+    if(svc.connected && svc.data && Array.isArray(svc.data.incidents)){
+      svc.data.incidents.forEach(i=>{
+        const sev = i.severity === 'critical' ? 'dot-danger' : i.severity === 'warning' ? 'dot-warn' : 'dot-good';
+        items.push({
+          sev, desc: i.description || 'Incidente sem descrição',
+          service: SERVICE_META[key] ? SERVICE_META[key].name : key,
+          start: i.startedAt || '—',
+          duration: i.durationMin != null ? i.durationMin + 'min' : '—'
+        });
+      });
+    }
+  });
+  return items;
+}
+function getRealDeploys(){
+  const items = [];
+  Object.entries(state.services).forEach(([key, svc])=>{
+    if(svc.connected && svc.data && Array.isArray(svc.data.deploys)){
+      svc.data.deploys.forEach(d=>{
+        items.push({
+          service: d.service || (SERVICE_META[key] ? SERVICE_META[key].name : key),
+          env: d.environment || '—',
+          when: d.when || '—',
+          status: d.status === 'fail' ? 'fail' : 'ok'
+        });
+      });
+    }
+  });
+  return items;
+}
+
+function renderIncidents(){
+  const q = (document.getElementById('incidentSearch').value || '').toLowerCase();
+  const real = getRealIncidents();
+  const usingDemo = real.length === 0;
+  document.getElementById('incidentsDemoTag').style.display = usingDemo ? 'inline-flex' : 'none';
+  const source = usingDemo ? DEMO_INCIDENTS : real;
+  const filtered = source.filter(i => (i.desc+i.service).toLowerCase().includes(q));
+  const wrap = document.getElementById('incidentsList');
+  wrap.innerHTML = '';
+  filtered.slice(0, incidentsShown).forEach(i=>{
+    const item = document.createElement('div');
+    item.className = 'timeline-item';
+    item.innerHTML = `
+      <span class="timeline-dot ${i.sev}"></span>
+      <div class="timeline-head">
+        <span class="timeline-desc">${i.desc}</span>
+        <span class="mono-cell">${i.duration}</span>
+      </div>
+      <div class="timeline-meta">${i.service} · ${i.start}</div>
+    `;
+    wrap.appendChild(item);
+  });
+  if(filtered.length === 0){
+    wrap.innerHTML = `<div class="timeline-empty">Nenhum incidente encontrado.</div>`;
+  } else if(filtered.length > incidentsShown){
+    const more = document.createElement('div');
+    more.className = 'list-more';
+    more.innerHTML = `<button class="btn small" id="incidentsMoreBtn">Mostrar mais (${filtered.length - incidentsShown})</button>`;
+    wrap.appendChild(more);
+    document.getElementById('incidentsMoreBtn').addEventListener('click', ()=>{ incidentsShown += PAGE_SIZE; renderIncidents(); });
+  }
+}
+
+function renderDeploys(){
+  const q = (document.getElementById('deploySearch').value || '').toLowerCase();
+  const real = getRealDeploys();
+  const usingDemo = real.length === 0;
+  document.getElementById('deploysDemoTag').style.display = usingDemo ? 'inline-flex' : 'none';
+  const source = usingDemo ? DEMO_DEPLOYS : real;
+  const filtered = source.filter(d => (d.service+d.env).toLowerCase().includes(q));
+  const wrap = document.getElementById('deploysList');
+  wrap.innerHTML = '';
+  filtered.slice(0, deploysShown).forEach(d=>{
+    const row = document.createElement('div');
+    row.className = 'list-row';
+    row.innerHTML = `<span class="dot dot-lg ${d.status==='ok'?'dot-good':'dot-danger'}"></span><span class="mono-cell">${d.service}</span><span class="mono-cell">${d.env}</span><span class="mono-cell">${d.when}</span><span><span class="badge ${d.status==='ok'?'badge-good':'badge-danger'}">${d.status==='ok'?'concluído':'falhou'}</span></span>`;
+    wrap.appendChild(row);
+  });
+  if(filtered.length === 0){
+    wrap.innerHTML = `<div class="list-row" style="grid-template-columns:1fr;"><span style="color:var(--ink-faint);">Nenhum deploy encontrado.</span></div>`;
+  } else if(filtered.length > deploysShown){
+    const more = document.createElement('div');
+    more.className = 'list-more';
+    more.innerHTML = `<button class="btn small" id="deploysMoreBtn">Mostrar mais (${filtered.length - deploysShown})</button>`;
+    wrap.appendChild(more);
+    document.getElementById('deploysMoreBtn').addEventListener('click', ()=>{ deploysShown += PAGE_SIZE; renderDeploys(); });
+  }
+}
+
+function wireSearch(inputId, clearId, onChange){
+  const input = document.getElementById(inputId);
+  const clearBtn = document.getElementById(clearId);
+  const sync = ()=>{ clearBtn.classList.toggle('show', input.value.length > 0); };
+  input.addEventListener('input', ()=>{ sync(); onChange(); });
+  clearBtn.addEventListener('click', ()=>{ input.value=''; sync(); onChange(); input.focus(); });
+  sync();
+}
+wireSearch('incidentSearch','incidentSearchClear', ()=>{ incidentsShown = PAGE_SIZE; renderIncidents(); });
+wireSearch('deploySearch','deploySearchClear', ()=>{ deploysShown = PAGE_SIZE; renderDeploys(); });
+
+function toCSV(rows, headers){
+  const esc = v => `"${String(v).replace(/"/g,'""')}"`;
+  return [headers.join(','), ...rows.map(r => headers.map(h => esc(r[h])).join(','))].join('\n');
+}
+async function copyCSV(kind){
+  const csv = kind === 'incidents'
+    ? toCSV(DEMO_INCIDENTS, ['sev','desc','service','start','duration'])
+    : toCSV(DEMO_DEPLOYS, ['service','env','when','status']);
+  try{
+    await navigator.clipboard.writeText(csv);
+    showToast('CSV copiado — cole numa planilha.', 'success');
+  }catch(e){
+    showToast('Não consegui copiar automaticamente. Selecione o texto manualmente.', 'error');
+  }
+}
+
+/* ---------- toasts ---------- */
+function showToast(message, type){
+  const stack = document.getElementById('toastStack');
+  const el = document.createElement('div');
+  el.className = 'toast' + (type ? ' '+type : '');
+  el.textContent = message;
+  stack.appendChild(el);
+  requestAnimationFrame(()=> el.classList.add('show'));
+  setTimeout(()=>{
+    el.classList.remove('show');
+    setTimeout(()=> el.remove(), 250);
+  }, 4000);
+}
+
+/* ---------- theme toggle ---------- */
+function systemPrefersDark(){
+  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+function storedTheme(){
+  return localStorage.getItem('exo_theme') || 'auto';
+}
+function applyTheme(){
+  const t = storedTheme();
+  if(t === 'auto') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', t);
+  const btn = document.getElementById('themeToggle');
+  btn.textContent = t === 'auto' ? '🌓' : (t === 'dark' ? '🌙' : '☀️');
+  const label = t === 'auto' ? 'automático (segue o sistema)' : (t === 'dark' ? 'escuro' : 'claro');
+  btn.setAttribute('aria-label', 'Tema atual: ' + label + '. Clique para mudar.');
+}
+document.getElementById('themeToggle').addEventListener('click', ()=>{
+  const order = ['auto','dark','light'];
+  const next = order[(order.indexOf(storedTheme()) + 1) % order.length];
+  if(next === 'auto') localStorage.removeItem('exo_theme');
+  else localStorage.setItem('exo_theme', next);
+  applyTheme();
+});
+applyTheme();
+
+/* ---------- uptime trend ---------- */
+let uptimeHistory = [];
+function pushUptimeHistory(v){
+  uptimeHistory.push(v);
+  if(uptimeHistory.length > 20) uptimeHistory.shift();
+  const min = Math.min(...uptimeHistory), max = Math.max(...uptimeHistory);
+  const range = (max - min) || 1;
+  const pts = uptimeHistory.map((val,i)=>{
+    const x = (i / ((uptimeHistory.length-1) || 1)) * 100;
+    const y = 22 - ((val - min) / range) * 18;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(' ');
+  const line = document.getElementById('heroSparkLine');
+  if(line) line.setAttribute('points', pts);
+}
+
+function renderRegions(){
+  const grid = document.getElementById('regionsGrid');
+  grid.innerHTML = '';
+  const aws = state.services.aws;
+  const awsConnected = aws.connected && aws.data;
+  const regions = awsConnected && aws.data.region
+    ? [{ name: aws.data.region, latency: 22, instances: aws.data.instances || 0, real:true }, ...DEMO_REGIONS.filter(r=>r.name!==aws.data.region)]
+    : DEMO_REGIONS;
+  regions.forEach(r=>{
+    const card = document.createElement('div');
+    card.className = 'region-card';
+    let dotClass = 'dot-good';
+    if(r.real && aws.error) dotClass = 'dot-danger';
+    else if(r.latency > 150) dotClass = 'dot-danger';
+    else if(r.latency > 80) dotClass = 'dot-warn';
+    card.innerHTML = `
+      <div class="region-top">
+        <span class="region-name">${r.name}</span>
+        <span class="dot ${dotClass}"></span>
+      </div>
+      <div class="region-stats"><span>latência</span><strong>${r.latency}ms</strong></div>
+      <div class="region-stats" style="margin-top:6px;"><span>instâncias</span><strong>${r.instances}</strong></div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function resetIntegrations(){
+  state = defaultState();
+  saveState();
+  renderServices(); renderMetrics(); renderOverall(); renderRegions(); renderIncidents(); renderDeploys();
+}
+
+/* ---------- clock ---------- */
+function tickClock(){
+  document.getElementById('clock').textContent = new Date().toLocaleTimeString('pt-BR', { timeZone: state.timezone });
+}
+setInterval(tickClock, 1000);
+tickClock();
+
+/* ---------- scrollspy ---------- */
+const sections = ['overview','services','incidents','deploys','regions','settings'];
+const navLinks = {};
+sections.forEach(id => navLinks[id] = document.querySelector(`[data-nav="${id}"]`));
+const titles = { overview:'Visão geral', services:'Integrações', incidents:'Incidentes', deploys:'Deploys', regions:'Regiões', settings:'Ajustes' };
+
+const observer = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      Object.values(navLinks).forEach(l=>{ if(l){ l.classList.remove('active'); l.removeAttribute('aria-current'); } });
+      const id = entry.target.id;
+      if(navLinks[id]){
+        navLinks[id].classList.add('active');
+        navLinks[id].setAttribute('aria-current', 'page');
+        document.getElementById('crumbSection').textContent = titles[id];
+      }
+    }
+  });
+}, { rootMargin: '-40% 0px -50% 0px' });
+
+sections.forEach(id=>{
+  const el = document.getElementById(id);
+  if(el) observer.observe(el);
+});
+
+/* ---------- refresh interval ---------- */
+document.getElementById('refreshSelect').value = state.refreshSeconds;
+document.getElementById('refreshSelect').addEventListener('change', (e)=>{
+  state.refreshSeconds = parseInt(e.target.value, 10);
+  saveState();
+  restartTicker();
+});
+
+document.getElementById('timezoneSelect').value = state.timezone;
+document.getElementById('timezoneSelect').addEventListener('change', (e)=>{
+  state.timezone = e.target.value;
+  saveState();
+  tickClock();
+});
+
+document.getElementById('thresholdSelect').value = String(state.alertThreshold);
+document.getElementById('thresholdSelect').addEventListener('change', (e)=>{
+  state.alertThreshold = parseFloat(e.target.value);
+  saveState();
+  renderOverall();
+});
+
+const slackToggle = document.getElementById('slackNotifyToggle');
+slackToggle.checked = state.notifySlack;
+function updateSlackHint(){
+  document.getElementById('slackHint').textContent = state.services.slack.connected
+    ? 'O EXO avisa o endpoint do Slack quando uma conexão falhar'
+    : 'Precisa do Slack conectado em Integrações';
+}
+updateSlackHint();
+slackToggle.addEventListener('change', (e)=>{
+  state.notifySlack = e.target.checked;
+  saveState();
+});
+
+let tickerHandle = null;
+function restartTicker(){
+  if(tickerHandle) clearInterval(tickerHandle);
+  tickerHandle = setInterval(()=>{
+    renderMetrics();
+    renderOverall();
+  }, state.refreshSeconds * 1000);
+}
+
+/* ---------- init ---------- */
+renderServices();
+renderMetrics();
+renderIncidents();
+renderDeploys();
+renderRegions();
+renderOverall();
+restartTicker();
+</script>
+</body>
+</html>
